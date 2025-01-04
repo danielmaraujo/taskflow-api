@@ -49,7 +49,7 @@ public class TaskService {
         taskRepository.delete(task);
     }
 
-    public List<Task> getByUserId(Long userId){
-        return taskRepository.findByUserId(userId);
+    public List<Task> getByEmail(String email){
+        return taskRepository.findByUserEmail(email);
     }
 }
