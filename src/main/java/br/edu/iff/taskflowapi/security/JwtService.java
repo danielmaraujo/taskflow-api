@@ -10,6 +10,7 @@ import org.springframework.security.oauth2.jwt.JwtEncoderParameters;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
+import java.util.Objects;
 
 @Service
 public class JwtService {
@@ -26,6 +27,8 @@ public class JwtService {
     }
 
     public String generateToken(User user) {
+        Objects.requireNonNull(user.getEmail(), "User email cannot be null");
+
         Instant now = Instant.now();
 
         JwtClaimsSet claims = JwtClaimsSet.builder()
@@ -41,6 +44,7 @@ public class JwtService {
     }
 
     public String getEmailFromToken(String token){
+        Objects.requireNonNull(token, "Token cannot be null");
         return decoder.decode(token).getSubject();
     }
 }

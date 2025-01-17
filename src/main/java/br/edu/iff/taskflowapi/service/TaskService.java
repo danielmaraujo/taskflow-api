@@ -3,7 +3,9 @@ package br.edu.iff.taskflowapi.service;
 import br.edu.iff.taskflowapi.model.Task;
 import br.edu.iff.taskflowapi.model.User;
 import br.edu.iff.taskflowapi.repository.TaskRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -20,7 +22,7 @@ public class TaskService {
 
     public Task saveTask(Task task, String email) {
         User user = userService.getByEmail(email)
-            .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não encontrado."));
 
         task.setUser(user);
         return taskRepository.save(task);
@@ -28,22 +30,25 @@ public class TaskService {
 
     public Task updateTask(Task task, String email) {
         Task taskDB = taskRepository.findById(task.getId())
-            .orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada."));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada."));
 
         if (!taskDB.getUser().getEmail().equals(email)) {
-            throw new IllegalArgumentException("Usuário não autorizado.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado.");
         }
 
-        task.setUser(taskDB.getUser());
-        return taskRepository.save(task);
+        taskDB.setDescription(task.getDescription());
+        taskDB.setStatus(task.getStatus());
+        taskDB.setTitle(task.getTitle());
+        taskDB.setLimitDate(task.getLimitDate());
+        return taskRepository.save(taskDB);
     }
 
     public void deleteTask(Long id, String email) {
         Task task = taskRepository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Tarefa não encontrada."));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada."));
 
         if (!task.getUser().getEmail().equals(email)) {
-            throw new IllegalArgumentException("Usuário não autorizado.");
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado.");
         }
 
         taskRepository.delete(task);
@@ -51,5 +56,16 @@ public class TaskService {
 
     public List<Task> getByEmail(String email){
         return taskRepository.findByUserEmail(email);
+    }
+
+    public Task getById(Long id, String email) {
+        Task task = taskRepository.findById(id)
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Tarefa não encontrada."));
+
+        if (!task.getUser().getEmail().equals(email)) {
+            throw new ResponseStatusException(HttpStatus.FORBIDDEN, "Usuário não autorizado.");
+        }
+
+        return task;
     }
 }
