@@ -20,19 +20,33 @@ public class UserService {
     }
 
     public Optional<User> getByEmail(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email não pode ser vazio.");
+        }
         return userRepository.findByEmail(email);
     }
 
     public User saveUser(User user) {
+        if (user.getEmail() == null || user.getEmail().trim().isEmpty()) {
+            throw new IllegalArgumentException("Email não pode ser vazio.");
+        }
+        if (user.getPassword() == null || user.getPassword().isEmpty()) {
+            throw new IllegalArgumentException("Senha não pode ser vazia.");
+        }
         if (this.getByEmail(user.getEmail()).isPresent()) {
             throw new IllegalArgumentException("O email já está cadastrado.");
         }
-
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return userRepository.save(user);
     }
 
     public User authenticateUser(String email, String password) {
+        if (email == null || email.trim().isEmpty()) {
+            throw new IllegalArgumentException("Email não pode ser vazio.");
+        }
+        if (password == null || password.isEmpty()) {
+            throw new IllegalArgumentException("Senha não pode ser vazia.");
+        }
         User user = this.getByEmail(email)
             .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado."));
 
