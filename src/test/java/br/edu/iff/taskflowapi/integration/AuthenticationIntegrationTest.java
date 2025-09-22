@@ -36,9 +36,9 @@ class AuthenticationIntegrationTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Ensure user does not exist before test
+        // delete user if exists
         userRepository.findByEmail(email).ifPresent(userRepository::delete);
-        // Create user via signup endpoint
+        // create user
         UserRequest userRequest = new UserRequest();
         userRequest.setName("Integration User");
         userRequest.setEmail(email);

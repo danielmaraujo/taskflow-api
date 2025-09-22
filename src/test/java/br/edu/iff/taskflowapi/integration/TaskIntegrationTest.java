@@ -44,12 +44,12 @@ class TaskIntegrationTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        // Clean up user and tasks
+        // clean up user and tasks
         userRepository.findByEmail(email).ifPresent(user -> {
             taskRepository.deleteAll(taskRepository.findByUserEmail(email));
             userRepository.delete(user);
         });
-        // Signup
+        // signup
         UserRequest userRequest = new UserRequest();
         userRequest.setName("Task Integration User");
         userRequest.setEmail(email);
@@ -58,7 +58,7 @@ class TaskIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRequest)))
             .andExpect(status().isOk());
-        // Login
+        // login
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(email);
         loginRequest.setPassword(password);
@@ -84,7 +84,7 @@ class TaskIntegrationTest {
     // =============================
     @Test
     void create_getAll_getById_update_delete_flow() throws Exception {
-        // Create Task
+        // create
         Task task = new Task();
         task.setTitle("Integration Task");
         task.setDescription("desc");
@@ -99,7 +99,7 @@ class TaskIntegrationTest {
         assertThat(createdTask.getId()).isNotNull();
         assertThat(createdTask.getTitle()).isEqualTo("Integration Task");
 
-        // Get All Tasks
+        // get all
         MvcResult allResult = mockMvc.perform(get("/api/task/all")
                 .header("Authorization", token))
             .andExpect(status().isOk())
@@ -108,7 +108,7 @@ class TaskIntegrationTest {
         assertThat(tasks).isNotEmpty();
         assertThat(tasks.stream().anyMatch(t -> t.getId().equals(createdTask.getId()))).isTrue();
 
-        // Get By Id
+        // get by id
         MvcResult getResult = mockMvc.perform(get("/api/task/" + createdTask.getId())
                 .header("Authorization", token))
             .andExpect(status().isOk())
@@ -116,7 +116,7 @@ class TaskIntegrationTest {
         Task fetchedTask = objectMapper.readValue(getResult.getResponse().getContentAsString(), Task.class);
         assertThat(fetchedTask.getId()).isEqualTo(createdTask.getId());
 
-        // Update Task
+        // update
         createdTask.setTitle("Updated Title");
         MvcResult updateResult = mockMvc.perform(put("/api/task/" + createdTask.getId())
                 .header("Authorization", token)
@@ -127,7 +127,7 @@ class TaskIntegrationTest {
         Task updatedTask = objectMapper.readValue(updateResult.getResponse().getContentAsString(), Task.class);
         assertThat(updatedTask.getTitle()).isEqualTo("Updated Title");
 
-        // Delete Task
+        // delete
         mockMvc.perform(delete("/api/task/" + createdTask.getId())
                 .header("Authorization", token))
             .andExpect(status().isNoContent());
@@ -136,10 +136,10 @@ class TaskIntegrationTest {
 
     @Test
     void unauthorized_access_returns4xx() throws Exception {
-        // Try to get all tasks without token
+        // try to get all tasks without token
         mockMvc.perform(get("/api/task/all"))
             .andExpect(status().is4xxClientError());
-        // Try to create task without token
+        // try to create task without token
         Task task = new Task();
         task.setTitle("No Auth");
         mockMvc.perform(post("/api/task")

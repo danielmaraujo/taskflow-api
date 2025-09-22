@@ -58,14 +58,14 @@ class UserRegistrationIntegrationTest {
             .andExpect(jsonPath("$.email").value(email))
             .andExpect(jsonPath("$.password").doesNotExist())
             .andReturn();
-        // Ensure user is in DB
+        // ensure user was created in the db
         User user = userRepository.findByEmail(email).orElse(null);
         assertThat(user).isNotNull();
     }
 
     @Test
     void duplicate_email_registration_returns4xx() throws Exception {
-        // First registration
+        // first registration
         UserRequest userRequest = new UserRequest();
         userRequest.setName("Registration Integration User");
         userRequest.setEmail(email);
@@ -74,7 +74,7 @@ class UserRegistrationIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRequest)))
             .andExpect(status().isOk());
-        // Duplicate registration
+        // duplicate registration
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRequest)))
@@ -84,7 +84,7 @@ class UserRegistrationIntegrationTest {
     @Test
     void missing_fields_registration_returns4xx() throws Exception {
         UserRequest userRequest = new UserRequest();
-        // No fields set
+        
         mockMvc.perform(post("/api/auth/signup")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRequest)))

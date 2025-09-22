@@ -37,7 +37,7 @@ class SecurityIntegrationTest {
     @BeforeEach
     void setUp() throws Exception {
         userRepository.findByEmail(email).ifPresent(userRepository::delete);
-        // Signup
+        // signup
         UserRequest userRequest = new UserRequest();
         userRequest.setName("Security Integration User");
         userRequest.setEmail(email);
@@ -46,7 +46,7 @@ class SecurityIntegrationTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(userRequest)))
             .andExpect(status().isOk());
-        // Login
+        // login
         LoginRequest loginRequest = new LoginRequest();
         loginRequest.setEmail(email);
         loginRequest.setPassword(password);

@@ -41,13 +41,13 @@ class JwtServiceTest {
 
     @BeforeEach
     void setUp() {
-        // Manually inject the field
+        // manually inject the field
         ReflectionTestUtils.setField(jwtService, "expiry", expiry);
     }
 
     @Test
     void generateToken_withValidUser() {
-        // Given
+        // given
         User user = new User();
         user.setEmail("test@example.com");
 
@@ -61,10 +61,10 @@ class JwtServiceTest {
 
         when(jwtEncoder.encode(any(JwtEncoderParameters.class))).thenReturn(mockJwt);
 
-        // When
+        // when
         String token = jwtService.generateToken(user);
 
-        // Then
+        // then
         assertThat(token).isNotEmpty().isEqualTo(mockJwt.getTokenValue());
 
         ArgumentCaptor<JwtEncoderParameters> captor = ArgumentCaptor.forClass(JwtEncoderParameters.class);
@@ -80,11 +80,11 @@ class JwtServiceTest {
 
     @Test
     void generateToken_userWithoutEmail() {
-        // Given
+        // given
         User user = new User();
         user.setEmail(null);
 
-        // When / Then
+        // when / then
         assertThatThrownBy(() -> jwtService.generateToken(user))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("User email cannot be null");
@@ -92,7 +92,7 @@ class JwtServiceTest {
 
     @Test
     void getEmailFromToken_withValidToken() {
-        // Given
+        // given
         String token = "valid-jwt";
         Instant now = Instant.now();
         Instant expiry = now.plusSeconds(3600);
@@ -107,22 +107,22 @@ class JwtServiceTest {
         );
         when(jwtDecoder.decode(token)).thenReturn(mockJwt);
 
-        // When
+        // when
         String email = jwtService.getEmailFromToken(token);
 
-        // Then
+        // then
         assertThat(email).isEqualTo(subject);
     }
 
     @Test
     void getEmailFromToken_withInvalidToken() {
-        // Given
+        // given
         String invalidToken = "invalid-jwt";
 
         when(jwtDecoder.decode(invalidToken))
             .thenThrow(new JwtException("Invalid JWT"));
 
-        // When / Then
+        // when / then
         assertThatThrownBy(() -> jwtService.getEmailFromToken(invalidToken))
             .isInstanceOf(JwtException.class)
             .hasMessage("Invalid JWT");
@@ -130,10 +130,10 @@ class JwtServiceTest {
 
     @Test
     void getEmailFromToken_withNullToken() {
-        // Given
+        // given
         String nullToken = null;
 
-        // When / Then
+        // when / then
         assertThatThrownBy(() -> jwtService.getEmailFromToken(nullToken))
             .isInstanceOf(NullPointerException.class)
             .hasMessage("Token cannot be null");
