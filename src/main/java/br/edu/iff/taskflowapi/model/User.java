@@ -1,5 +1,6 @@
 package br.edu.iff.taskflowapi.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -17,6 +18,7 @@ public class User {
     private String name;
     @Column(unique = true)
     private String email;
+    @JsonIgnore
     private String password;
 
     public Long getId() {

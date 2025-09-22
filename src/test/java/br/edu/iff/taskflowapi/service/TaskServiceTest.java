@@ -1,5 +1,6 @@
 package br.edu.iff.taskflowapi.service;
 
+import br.edu.iff.taskflowapi.dto.TaskRequest;
 import br.edu.iff.taskflowapi.model.Status;
 import br.edu.iff.taskflowapi.model.Task;
 import br.edu.iff.taskflowapi.model.User;
@@ -37,6 +38,7 @@ class TaskServiceTest {
 
     private User user;
     private Task task;
+    private TaskRequest taskRequest;
 
     @BeforeEach
     void setUp() {
@@ -47,10 +49,15 @@ class TaskServiceTest {
 
         task = new Task();
         task.setId(10L);
-        task.setTitle("Sample Task");
-        task.setDescription("Sample Description");
+        task.setTitle("Test Task");
+        task.setDescription("desc");
         task.setStatus(Status.OPEN);
-        task.setLimitDate(LocalDate.now().plusDays(5));
+        task.setLimitDate(LocalDate.parse("2024-12-31"));
+
+        taskRequest = new TaskRequest();
+        taskRequest.setTitle("Test Task");
+        taskRequest.setDescription("desc");
+        taskRequest.setLimitDate("2024-12-31");
     }
 
     // ==================
@@ -63,13 +70,18 @@ class TaskServiceTest {
         when(taskRepository.save(any(Task.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
-        Task savedTask = taskService.saveTask(task, user.getEmail());
+        Task savedTask = taskService.saveTask(taskRequest, user.getEmail());
 
         // then
         assertThat(savedTask).isNotNull();
+        assertThat(savedTask.getTitle()).isEqualTo(taskRequest.getTitle());
+        assertThat(savedTask.getDescription()).isEqualTo(taskRequest.getDescription());
+        assertThat(savedTask.getLimitDate()).isEqualTo(LocalDate.parse(taskRequest.getLimitDate()));
+        assertThat(savedTask.getStatus()).isEqualTo(Status.OPEN);
+        assertThat(savedTask.getCreationDate()).isEqualTo(LocalDate.now());
         assertThat(savedTask.getUser()).isEqualTo(user);
         verify(userService, times(1)).getByEmail(user.getEmail());
-        verify(taskRepository, times(1)).save(task);
+        verify(taskRepository, times(1)).save(any(Task.class));
     }
 
     @Test
@@ -78,7 +90,7 @@ class TaskServiceTest {
         when(userService.getByEmail(user.getEmail())).thenReturn(Optional.empty());
 
         // when / then
-        assertThatThrownBy(() -> taskService.saveTask(task, user.getEmail()))
+        assertThatThrownBy(() -> taskService.saveTask(taskRequest, user.getEmail()))
             .isInstanceOfSatisfying(ResponseStatusException.class, ex -> {
                 assertThat(ex.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
                 assertThat(ex.getReason()).isEqualTo("Usuário não encontrado.");
@@ -107,8 +119,8 @@ class TaskServiceTest {
 
         // then
         assertThat(updatedTask).isNotNull();
-        assertThat(updatedTask.getTitle()).isEqualTo("Sample Task");
-        assertThat(updatedTask.getDescription()).isEqualTo("Sample Description");
+        assertThat(updatedTask.getTitle()).isEqualTo("Test Task");
+        assertThat(updatedTask.getDescription()).isEqualTo("desc");
         assertThat(updatedTask.getLimitDate()).isEqualTo(task.getLimitDate());
         verify(taskRepository, times(1)).save(any(Task.class));
     }
@@ -213,7 +225,7 @@ class TaskServiceTest {
 
         // then
         assertThat(result).hasSize(1);
-        assertThat(result.get(0).getTitle()).isEqualTo("Sample Task");
+        assertThat(result.get(0).getTitle()).isEqualTo("Test Task");
         verify(taskRepository, times(1)).findByUserEmail(user.getEmail());
     }
 

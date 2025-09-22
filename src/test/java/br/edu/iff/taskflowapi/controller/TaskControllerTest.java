@@ -1,5 +1,7 @@
 package br.edu.iff.taskflowapi.controller;
 
+import br.edu.iff.taskflowapi.dto.TaskRequest;
+import br.edu.iff.taskflowapi.model.Status;
 import br.edu.iff.taskflowapi.model.Task;
 import br.edu.iff.taskflowapi.security.JwtService;
 import br.edu.iff.taskflowapi.service.TaskService;
@@ -10,8 +12,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mock.web.MockHttpServletRequest;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
-import java.net.URI;
+import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,6 +36,7 @@ class TaskControllerTest {
     private TaskController taskController;
 
     private Task task;
+    private TaskRequest taskRequest;
     private String token;
     private String email;
 
@@ -42,6 +48,16 @@ class TaskControllerTest {
         task.setId(1L);
         task.setTitle("Test Task");
         task.setDescription("desc");
+        task.setStatus(Status.OPEN);
+        task.setLimitDate(LocalDate.parse("2024-12-31"));
+        task.setCreationDate(LocalDate.now());
+        taskRequest = new TaskRequest();
+        taskRequest.setTitle("Test Task");
+        taskRequest.setDescription("desc");
+        taskRequest.setLimitDate("2024-12-31");
+
+        MockHttpServletRequest request = new org.springframework.mock.web.MockHttpServletRequest();
+        RequestContextHolder.setRequestAttributes(new ServletRequestAttributes(request));
     }
 
     // =============================
@@ -76,12 +92,13 @@ class TaskControllerTest {
     @Test
     void save_returnsCreatedTask() {
         when(jwtService.getEmailFromToken(token)).thenReturn(email);
-        when(taskService.saveTask(task, email)).thenReturn(task);
-        ResponseEntity<Task> response = taskController.save(token, task);
+        when(taskService.saveTask(taskRequest, email)).thenReturn(task);
+
+        ResponseEntity<Task> response = taskController.save(token, taskRequest);
         assertThat(response.getBody()).isNotNull();
         assertThat(response.getBody().getId()).isEqualTo(task.getId());
         assertThat(response.getStatusCode().is2xxSuccessful()).isTrue();
-        verify(taskService, times(1)).saveTask(task, email);
+        verify(taskService, times(1)).saveTask(taskRequest, email);
     }
 
     // =============================
@@ -133,8 +150,8 @@ class TaskControllerTest {
     @Test
     void save_whenServiceThrows_propagatesException() {
         when(jwtService.getEmailFromToken(token)).thenReturn(email);
-        when(taskService.saveTask(task, email)).thenThrow(new RuntimeException("fail"));
-        assertThatThrownBy(() -> taskController.save(token, task))
+        when(taskService.saveTask(taskRequest, email)).thenThrow(new RuntimeException("fail"));
+        assertThatThrownBy(() -> taskController.save(token, taskRequest))
             .isInstanceOf(RuntimeException.class)
             .hasMessage("fail");
     }

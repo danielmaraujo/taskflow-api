@@ -45,6 +45,11 @@ public class JwtService {
 
     public String getEmailFromToken(String token){
         Objects.requireNonNull(token, "Token cannot be null");
+
+        if(token.startsWith("Bearer")){
+            token = token.substring(7);
+        }
+
         return decoder.decode(token).getSubject();
     }
 }

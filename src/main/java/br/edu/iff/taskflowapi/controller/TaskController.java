@@ -1,5 +1,6 @@
 package br.edu.iff.taskflowapi.controller;
 
+import br.edu.iff.taskflowapi.dto.TaskRequest;
 import br.edu.iff.taskflowapi.model.Task;
 import br.edu.iff.taskflowapi.security.JwtService;
 import br.edu.iff.taskflowapi.service.TaskService;
@@ -41,14 +42,16 @@ public class TaskController {
     }
 
     @PostMapping
-    public ResponseEntity<Task> save(@RequestHeader("Authorization") String authorizationToken, @RequestBody Task task){
+    public ResponseEntity<Task> save(@RequestHeader("Authorization") String authorizationToken, @RequestBody TaskRequest taskRequest){
+        Task task = taskService.saveTask(taskRequest, jwtService.getEmailFromToken(authorizationToken));
+
         URI location = ServletUriComponentsBuilder
             .fromCurrentRequest()
             .path("/{id}")
             .buildAndExpand(task.getId())
             .toUri();
 
-        return ResponseEntity.created(location).body(taskService.saveTask(task, jwtService.getEmailFromToken(authorizationToken)));
+        return ResponseEntity.created(location).body(task);
     }
 
     @PutMapping("/{id}")

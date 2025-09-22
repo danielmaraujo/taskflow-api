@@ -1,5 +1,7 @@
 package br.edu.iff.taskflowapi.service;
 
+import br.edu.iff.taskflowapi.dto.TaskRequest;
+import br.edu.iff.taskflowapi.model.Status;
 import br.edu.iff.taskflowapi.model.Task;
 import br.edu.iff.taskflowapi.model.User;
 import br.edu.iff.taskflowapi.repository.TaskRepository;
@@ -7,6 +9,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -20,10 +23,16 @@ public class TaskService {
         this.userService = userService;
     }
 
-    public Task saveTask(Task task, String email) {
+    public Task saveTask(TaskRequest taskRequest, String email) {
         User user = userService.getByEmail(email)
             .orElseThrow(() -> new ResponseStatusException(HttpStatus.BAD_REQUEST, "Usuário não encontrado."));
 
+        Task task = new Task();
+        task.setTitle(taskRequest.getTitle());
+        task.setDescription(taskRequest.getDescription());
+        task.setLimitDate(LocalDate.parse(taskRequest.getLimitDate()));
+        task.setCreationDate(LocalDate.now());
+        task.setStatus(Status.OPEN);
         task.setUser(user);
         return taskRepository.save(task);
     }
