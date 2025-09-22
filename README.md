@@ -46,3 +46,22 @@ Authorization: <token_jwt>
 ## Modelo de Dados
 - **Usuário**: Contém informações do usuário (nome, email, senha)
 - **Tarefa**: Representa uma tarefa com título, descrição, status (PENDENTE, EM_ANDAMENTO, CONCLUÍDA), data de criação e prazo.
+
+## Construção e Execução da Imagem Docker
+
+### Construir a Imagem
+
+```bash
+docker build -t taskflow-api .
+```
+
+### Executar o Container Localmente
+
+```bash
+docker run -p 8080:8080 \
+  -e SPRING_PROFILES_ACTIVE=prod \
+  -e DB_USERNAME=taskflow \
+  -e DB_PASSWORD=senha_segura \
+  -e JWT_EXPIRATION=86400000 \
+  taskflow-api
+```
