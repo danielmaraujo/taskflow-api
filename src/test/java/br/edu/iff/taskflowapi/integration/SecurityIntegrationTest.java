@@ -14,7 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -68,6 +67,33 @@ class SecurityIntegrationTest {
     // Security Integration Tests
     // =============================
     @Test
+    void publicEndpoint_signup_allowsAccess() throws Exception {
+        UserRequest userRequest = new UserRequest();
+        userRequest.setName("Public Test User");
+        userRequest.setEmail("public@example.com");
+        userRequest.setPassword("password");
+        
+        mockMvc.perform(post("/api/auth/signup")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(userRequest)))
+            .andExpect(status().isOk());
+            
+        userRepository.findByEmail("public@example.com").ifPresent(userRepository::delete);
+    }
+
+    @Test
+    void publicEndpoint_login_allowsAccess() throws Exception {
+        LoginRequest loginRequest = new LoginRequest();
+        loginRequest.setEmail(email);
+        loginRequest.setPassword(password);
+        
+        mockMvc.perform(post("/api/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+            .andExpect(status().isOk());
+    }
+
+    @Test
     void protectedEndpoint_requiresAuthentication() throws Exception {
         mockMvc.perform(get("/api/task/all"))
             .andExpect(status().is4xxClientError());
@@ -84,16 +110,15 @@ class SecurityIntegrationTest {
     void protectedEndpoint_withInvalidToken_fails() throws Exception {
         mockMvc.perform(get("/api/task/all")
                 .header("Authorization", "Bearer invalid.jwt.token"))
-            .andExpect(status().is4xxClientError());
+            .andExpect(status().isUnauthorized());
     }
 
     @Test
-    void publicEndpoints_areAccessible() throws Exception {
-        mockMvc.perform(post("/api/auth/signup")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new UserRequest()))).andExpect(status().is4xxClientError()); // missing fields
-        mockMvc.perform(post("/api/auth/login")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(objectMapper.writeValueAsString(new LoginRequest()))).andExpect(status().is4xxClientError()); // missing fields
+    void protectedEndpoint_withExpiredToken_fails() throws Exception {
+        String expiredToken = "Bearer eyJhbGciOiJSUzI1NiJ9.eyJpc3MiOiJzcHJpbmctc2VjdXJpdHktand0Iiwic3ViIjoiZGFuaWVsYXJhdWpvQGdtYWlsLmNvbSIsImV4cCI6MTc1ODY1NjYzNywiaWF0IjoxNzU4NjUzMDM3fQ.K2s6eiyIZ0yt9eSSl9G0V9zVocxkTpP7KSI5FZtdfvCZqMV3kPirYthsRfaokd5_f3JQEPy-guDTNodgmYI43IibWIxWjco_iZG1bgV-1iVIyZ9I1cfozsRoTIB-eA2CrOO6ADd1MEVtqZi1EBUvhQ7oU5kWQIQHAPXrw6a0mJAmX7tjk06iVXQmwYJTVyx3thIbTrG4WRJOt8OFJQkuaHmbz4RU0lQBDn-AAP2Z0zPQV7rmUjHfIwkBkRtu9gdE-vm_WJ3pKxzoF2Bn1NSJdWErW_6ap_Q3K5EV1tr9Qk_UkEZa43XBGMlKsKgVgDUn_UNUXJ60eKCnMo7pz04z8g";
+        
+        mockMvc.perform(get("/api/task/all")
+                .header("Authorization", expiredToken))
+            .andExpect(status().isUnauthorized());
     }
-} 
+}
