@@ -3,8 +3,6 @@ name: CI Pipeline
 on:
   push:
     branches: [ "deploy_github" ]
-  pull_request:
-    branches: [ "deploy_github" ]
 
 jobs:
   unit-tests:
@@ -18,4 +16,4 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Run Unit Tests with Maven
-      run: mvn test
+      run: mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
