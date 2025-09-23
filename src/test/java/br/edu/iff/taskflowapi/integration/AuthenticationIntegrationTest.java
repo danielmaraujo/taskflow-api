@@ -90,4 +90,4 @@ class AuthenticationIntegrationTest {
                 .content(objectMapper.writeValueAsString(loginRequest)))
             .andExpect(status().is4xxClientError());
     }
-} 
+}

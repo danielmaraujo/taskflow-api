@@ -198,7 +198,6 @@ class UserServiceTest {
 
     @Test
     void authenticateUser_withEmptyPassword_throwsExceptionAndDoesNotCallRepository() {
-        when(userRepository.findByEmail(user.getEmail())).thenReturn(Optional.of(user));
         assertThatThrownBy(() -> userService.authenticateUser(user.getEmail(), ""))
             .isInstanceOf(IllegalArgumentException.class)
             .hasMessage("Senha não pode ser vazia.");

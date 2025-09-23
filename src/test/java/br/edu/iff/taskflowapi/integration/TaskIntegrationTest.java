@@ -1,9 +1,10 @@
 package br.edu.iff.taskflowapi.integration;
 
 import br.edu.iff.taskflowapi.dto.LoginRequest;
+import br.edu.iff.taskflowapi.dto.TaskRequest;
 import br.edu.iff.taskflowapi.dto.UserRequest;
+import br.edu.iff.taskflowapi.model.Status;
 import br.edu.iff.taskflowapi.model.Task;
-import br.edu.iff.taskflowapi.model.User;
 import br.edu.iff.taskflowapi.repository.TaskRepository;
 import br.edu.iff.taskflowapi.repository.UserRepository;
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -85,10 +86,10 @@ class TaskIntegrationTest {
     @Test
     void create_getAll_getById_update_delete_flow() throws Exception {
         // create
-        Task task = new Task();
+        TaskRequest task = new TaskRequest();
         task.setTitle("Integration Task");
         task.setDescription("desc");
-        task.setLimitDate(LocalDate.now().plusDays(5));
+        task.setLimitDate("2025-09-22");
         MvcResult createResult = mockMvc.perform(post("/api/task")
                 .header("Authorization", token)
                 .contentType(MediaType.APPLICATION_JSON)
@@ -98,6 +99,10 @@ class TaskIntegrationTest {
         Task createdTask = objectMapper.readValue(createResult.getResponse().getContentAsString(), Task.class);
         assertThat(createdTask.getId()).isNotNull();
         assertThat(createdTask.getTitle()).isEqualTo("Integration Task");
+        assertThat(createdTask.getStatus()).isEqualTo(Status.OPEN);
+        assertThat(createdTask.getCreationDate()).isEqualTo(LocalDate.now());
+        assertThat(createdTask.getLimitDate()).isEqualTo(LocalDate.parse("2025-09-22"));
+        assertThat(createdTask.getDescription()).isEqualTo("desc");
 
         // get all
         MvcResult allResult = mockMvc.perform(get("/api/task/all")
