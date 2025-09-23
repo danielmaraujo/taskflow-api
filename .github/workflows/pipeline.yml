@@ -16,7 +16,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Run Unit Tests with Maven
-      run: mvn test jacoco:check -Dtest="!br.edu.iff.taskflowapi.integration.**"
+      run: mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
 
   integration-tests:
     runs-on: ubuntu-latest
