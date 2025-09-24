@@ -31,3 +31,12 @@ jobs:
           cache: maven
       - name: Run Integration Tests with Maven
         run: mvn test -Dtest="br.edu.iff.taskflowapi.integration.**"
+
+  security-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@master
+      - name: Run Snyk
+        uses: snyk/actions/maven-3-jdk-17@master
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
