@@ -39,6 +39,7 @@ jobs:
       - uses: actions/checkout@master
       - name: Run Snyk
         uses: snyk/actions/maven-3-jdk-17@master
-        args: -d
+        with:
+          args: -d
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
