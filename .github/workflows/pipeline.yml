@@ -37,9 +37,9 @@ jobs:
     needs: integration-tests
     steps:
       - uses: actions/checkout@master
+      - name: Ensure mvnw is executable
+        run: chmod +x ./mvnw
       - name: Run Snyk
         uses: snyk/actions/maven-3-jdk-17@master
-        with:
-          args: -d
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
