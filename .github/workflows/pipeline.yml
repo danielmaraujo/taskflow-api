@@ -53,16 +53,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-          cache: maven
-
-      - name: Build with Maven
-        run: mvn clean package -DskipTests
-
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:
@@ -72,14 +62,13 @@ jobs:
         uses: google-github-actions/setup-gcloud@v2
 
       - name: Deploy to Cloud Run
-        run: |
-          gcloud run deploy taskflow-api \
-            --source . \
-            --platform managed \
-            --region us-central1 \
-            --allow-unauthenticated \
-            --project ${{ env.GCP_PROJECT_ID }} \
-            --memory 256Mi \
-            --cpu 0.5 \
-            --set-env-vars="SPRING_PROFILES_ACTIVE=prod" \
-            --set-env-vars="RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }},RSA_PUBLIC_KEY=${{ env.RSA_PUBLIC_KEY }}"
+        uses: google-github-actions/deploy-cloudrun@v3
+        with:
+          service: taskflow-api
+          project_id: ${{ env.GCP_PROJECT_ID }}
+          flags: --allow-unauthenticated --memory=256Mi --cpu=0.5
+          image: .
+          env_vars: |-
+            SPRING_PROFILES_ACTIVE=prod
+            RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}
+            RSA_PUBLIC_KEY=${{ env.RSA_PUBLIC_KEY }}
