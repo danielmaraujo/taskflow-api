@@ -2,7 +2,6 @@ package br.edu.iff.taskflowapi.integration;
 
 import br.edu.iff.taskflowapi.dto.LoginRequest;
 import br.edu.iff.taskflowapi.dto.UserRequest;
-import br.edu.iff.taskflowapi.model.User;
 import br.edu.iff.taskflowapi.repository.UserRepository;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.AfterEach;
@@ -14,7 +13,6 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
