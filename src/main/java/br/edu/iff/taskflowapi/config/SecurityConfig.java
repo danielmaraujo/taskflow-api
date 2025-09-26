@@ -9,6 +9,7 @@ import com.nimbusds.jose.proc.SecurityContext;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -38,9 +39,9 @@ import java.time.Duration;
 public class SecurityConfig{
 
     @Value("${jwt.public.key}")
-    private String key;
+    private Resource key;
     @Value("${jwt.private.key}")
-    private String priv;
+    private Resource priv;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -98,13 +99,14 @@ public class SecurityConfig{
         return new NimbusJwtEncoder(jwks);
     }
 
-    private RSAPublicKey generatePublicKey(String keyAsString) {
+    private RSAPublicKey generatePublicKey(Resource keyResource) {
         try {
-            keyAsString = keyAsString.replace("-----BEGIN PUBLIC KEY-----", "")
+            String keyResourceString = new String(keyResource.getInputStream().readAllBytes());
+            keyResourceString = keyResourceString.replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s", "");
 
-            byte[] keyBytes = java.util.Base64.getDecoder().decode(keyAsString);
+            byte[] keyBytes = java.util.Base64.getDecoder().decode(keyResourceString);
             java.security.spec.X509EncodedKeySpec spec = new java.security.spec.X509EncodedKeySpec(keyBytes);
             java.security.KeyFactory keyFactory = java.security.KeyFactory.getInstance("RSA");
             return (RSAPublicKey) keyFactory.generatePublic(spec);
@@ -113,13 +115,14 @@ public class SecurityConfig{
         }
     }
 
-    private RSAPrivateKey generatePrivateKey(String keyAsString) {
+    private RSAPrivateKey generatePrivateKey(Resource keyResource) {
         try {
-            keyAsString = keyAsString.replace("-----BEGIN PRIVATE KEY-----", "")
+            String keyResourceString = new String(keyResource.getInputStream().readAllBytes());
+            keyResourceString = keyResourceString.replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", "");
 
-            byte[] keyBytes = java.util.Base64.getDecoder().decode(keyAsString);
+            byte[] keyBytes = java.util.Base64.getDecoder().decode(keyResourceString);
             java.security.spec.PKCS8EncodedKeySpec spec = new java.security.spec.PKCS8EncodedKeySpec(keyBytes);
             java.security.KeyFactory keyFactory = java.security.KeyFactory.getInstance("RSA");
             return (RSAPrivateKey) keyFactory.generatePrivate(spec);
