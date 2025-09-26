@@ -38,9 +38,9 @@ import java.time.Duration;
 public class SecurityConfig{
 
     @Value("${jwt.public.key}")
-    private RSAPublicKey key;
+    private String key;
     @Value("${jwt.private.key}")
-    private RSAPrivateKey priv;
+    private String priv;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -80,19 +80,23 @@ public class SecurityConfig{
 
     @Bean
     JwtDecoder jwtDecoder() {
-        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(this.key).build();
-        
-        JwtTimestampValidator timestampValidator = new JwtTimestampValidator(Duration.ofSeconds(30));
-        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(timestampValidator);
-        decoder.setJwtValidator(validator);
-        
-        return decoder;
+        System.out.println("///DEBUG, injected key: " + this.key);
+        return null;
+//        RSAPublicKey key = (RSAPublicKey) PemUtils.parsePublicKey(this.key);
+//        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(key).build();
+//
+//        JwtTimestampValidator timestampValidator = new JwtTimestampValidator(Duration.ofSeconds(30));
+//        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(timestampValidator);
+//        decoder.setJwtValidator(validator);
+//
+//        return decoder;
     }
 
     @Bean
     JwtEncoder jwtEncoder() {
-        JWK jwk = new RSAKey.Builder(this.key).privateKey(this.priv).build();
-        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-        return new NimbusJwtEncoder(jwks);
+        return null;
+//        JWK jwk = new RSAKey.Builder(this.key).privateKey(this.priv).build();
+//        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+//        return new NimbusJwtEncoder(jwks);
     }
 }
