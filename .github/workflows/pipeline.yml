@@ -58,16 +58,13 @@ jobs:
         with:
           credentials_json: ${{ secrets.GCP_SA_KEY }}
 
-      - name: Set up Cloud SDK
-        uses: google-github-actions/setup-gcloud@v2
-
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
         with:
           service: taskflow-api
           project_id: ${{ env.GCP_PROJECT_ID }}
           flags: --allow-unauthenticated --memory=256Mi --cpu=0.5
-          image: .
+          source: .
           env_vars: |-
             SPRING_PROFILES_ACTIVE=prod
             RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}
