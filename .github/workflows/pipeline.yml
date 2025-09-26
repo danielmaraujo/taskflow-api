@@ -70,7 +70,7 @@ jobs:
           service: taskflow-api
           project_id: ${{ env.GCP_PROJECT_ID }}
           region: us-central1
-          flags: --allow-unauthenticated --memory=256Mi --cpu=0.5
+          flags: --allow-unauthenticated --memory=512Mi --cpu=1
           source: .
           env_vars: |-
             SPRING_PROFILES_ACTIVE=prod
