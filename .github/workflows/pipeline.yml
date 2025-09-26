@@ -63,6 +63,8 @@ jobs:
           mkdir -p keys
           echo "${{ secrets.RSA_PRIVATE_KEY }}" > keys/private_key.pem
           echo "${{ secrets.RSA_PUBLIC_KEY }}" > keys/public_key.pem
+          echo "Keys created"
+          ls -la keys
 
       - name: Deploy to Cloud Run
         uses: google-github-actions/deploy-cloudrun@v3
@@ -74,5 +76,3 @@ jobs:
           source: .
           env_vars: |-
             SPRING_PROFILES_ACTIVE=prod
-            RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }}
-            RSA_PUBLIC_KEY=${{ env.RSA_PUBLIC_KEY }}
