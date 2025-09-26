@@ -81,22 +81,50 @@ public class SecurityConfig{
     @Bean
     JwtDecoder jwtDecoder() {
         System.out.println("///DEBUG, injected key: " + this.key);
-        return null;
-//        RSAPublicKey key = (RSAPublicKey) PemUtils.parsePublicKey(this.key);
-//        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(key).build();
-//
-//        JwtTimestampValidator timestampValidator = new JwtTimestampValidator(Duration.ofSeconds(30));
-//        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(timestampValidator);
-//        decoder.setJwtValidator(validator);
-//
-//        return decoder;
+        NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(generatePublicKey(this.key)).build();
+
+        JwtTimestampValidator timestampValidator = new JwtTimestampValidator(Duration.ofSeconds(30));
+        OAuth2TokenValidator<Jwt> validator = new DelegatingOAuth2TokenValidator<>(timestampValidator);
+        decoder.setJwtValidator(validator);
+
+        return decoder;
     }
 
     @Bean
     JwtEncoder jwtEncoder() {
-        return null;
-//        JWK jwk = new RSAKey.Builder(this.key).privateKey(this.priv).build();
-//        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
-//        return new NimbusJwtEncoder(jwks);
+        System.out.println("///DEBUG, injected key: " + this.key);
+        JWK jwk = new RSAKey.Builder(generatePublicKey(this.key)).privateKey(generatePrivateKey(this.priv)).build();
+        JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
+        return new NimbusJwtEncoder(jwks);
+    }
+
+    private RSAPublicKey generatePublicKey(String keyAsString) {
+        try {
+            keyAsString = keyAsString.replace("-----BEGIN PUBLIC KEY-----", "")
+                .replace("-----END PUBLIC KEY-----", "")
+                .replaceAll("\\s", "");
+
+            byte[] keyBytes = java.util.Base64.getDecoder().decode(keyAsString);
+            java.security.spec.X509EncodedKeySpec spec = new java.security.spec.X509EncodedKeySpec(keyBytes);
+            java.security.KeyFactory keyFactory = java.security.KeyFactory.getInstance("RSA");
+            return (RSAPublicKey) keyFactory.generatePublic(spec);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar chave pública RSA", e);
+        }
+    }
+
+    private RSAPrivateKey generatePrivateKey(String keyAsString) {
+        try {
+            keyAsString = keyAsString.replace("-----BEGIN PRIVATE KEY-----", "")
+                .replace("-----END PRIVATE KEY-----", "")
+                .replaceAll("\\s", "");
+
+            byte[] keyBytes = java.util.Base64.getDecoder().decode(keyAsString);
+            java.security.spec.PKCS8EncodedKeySpec spec = new java.security.spec.PKCS8EncodedKeySpec(keyBytes);
+            java.security.KeyFactory keyFactory = java.security.KeyFactory.getInstance("RSA");
+            return (RSAPrivateKey) keyFactory.generatePrivate(spec);
+        } catch (Exception e) {
+            throw new RuntimeException("Erro ao gerar chave privada RSA", e);
+        }
     }
 }
