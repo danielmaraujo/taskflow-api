@@ -63,6 +63,7 @@ jobs:
         with:
           service: taskflow-api
           project_id: ${{ env.GCP_PROJECT_ID }}
+          region: us-central1
           flags: --allow-unauthenticated --memory=256Mi --cpu=0.5
           source: .
           env_vars: |-
