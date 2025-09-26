@@ -102,6 +102,7 @@ public class SecurityConfig{
     private RSAPublicKey generatePublicKey(Resource keyResource) {
         try {
             String keyResourceString = new String(keyResource.getInputStream().readAllBytes());
+            System.out.println("///DEBUG, keyResourceString public: " + keyResourceString);
             keyResourceString = keyResourceString.replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s", "");
@@ -118,6 +119,7 @@ public class SecurityConfig{
     private RSAPrivateKey generatePrivateKey(Resource keyResource) {
         try {
             String keyResourceString = new String(keyResource.getInputStream().readAllBytes());
+            System.out.println("///DEBUG, keyResourceString public: " + keyResourceString);
             keyResourceString = keyResourceString.replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", "");
