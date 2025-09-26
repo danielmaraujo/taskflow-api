@@ -78,8 +78,8 @@ jobs:
             --platform managed \
             --region us-central1 \
             --allow-unauthenticated \
-            --project ${{ GCP_PROJECT_ID }} \
+            --project ${{ env.GCP_PROJECT_ID }} \
             --memory 256Mi \
             --cpu 0.5 \
             --set-env-vars="SPRING_PROFILES_ACTIVE=prod" \
-            --set-env-vars="RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }},RSA_PUBLIC_KEY=${{ RSA_PUBLIC_KEY }}"
+            --set-env-vars="RSA_PRIVATE_KEY=${{ secrets.RSA_PRIVATE_KEY }},RSA_PUBLIC_KEY=${{ env.RSA_PUBLIC_KEY }}"
