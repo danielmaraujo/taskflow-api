@@ -74,6 +74,7 @@ load-test:
   stage: load-test
   image: grafana/k6:latest
   needs: ["deploy-to-cloud-run"]
+  entrypoint: [""]
   script:
     - k6 run ./k6/load-test.js
   rules:
