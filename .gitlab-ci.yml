@@ -18,8 +18,8 @@ unit-tests:
     - apt-get update -qq && apt-get install -y -qq maven
   script:
     - mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
-  only:
-    - deploy_github
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "deploy_gitlab"
 
 integration-tests:
   stage: pre-deploy-tests
@@ -29,8 +29,8 @@ integration-tests:
     - apt-get update -qq && apt-get install -y -qq maven
   script:
     - mvn test -Dtest="br.edu.iff.taskflowapi.integration.**"
-  only:
-    - deploy_github
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "deploy_gitlab"
 
 security-test:
   stage: pre-deploy-tests
@@ -45,8 +45,8 @@ security-test:
     - chmod +x ./mvnw
     - snyk auth $SNYK_TOKEN
     - snyk test --severity-threshold=high
-  only:
-    - deploy_github
+  rules:
+    - if: $CI_COMMIT_REF_NAME == "deploy_gitlab"
 
 deploy-to-cloud-run:
   stage: deploy
