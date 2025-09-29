@@ -30,14 +30,22 @@ const API_ENDPOINTS = {
     allTasks: `${BASE_URL}/api/task/all`
 };
 
-// Dados de teste
-const testUsers = [
-    { username: 'user1', password: 'password123', email: 'user1@test.com' },
-    { username: 'user2', password: 'password123', email: 'user2@test.com' },
-    { username: 'user3', password: 'password123', email: 'user3@test.com' },
-];
+// Gerador de dados aleatórios para usuários
+function generateRandomUser() {
+    const id = Math.floor(Math.random() * 100000);
+    const username = `user_${id}_${Date.now().toString().slice(-5)}`;
+    const email = `${username}@teste.com`;
+    const password = `senha_${Math.random().toString(36).substring(2, 10)}`;
 
-let authTokens = [];
+    return { username, email, password };
+}
+
+// Dados de teste - usuários gerados aleatoriamente
+const testUsers = [
+    generateRandomUser(),
+    generateRandomUser(),
+    generateRandomUser()
+];
 
 export function setup() {
     // Registrar usuários de teste
@@ -138,7 +146,7 @@ export default function(data) {
                         title: `Atualizado ${randomTask.title}`,
                         description: `Descrição atualizada em ${new Date().toISOString()}`,
                         limitDate: randomTask.limitDate || new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0],
-                        status: Math.random() < 0.5 ? 'IN_PROGRESS' : 'COMPLETED'
+                        status: randomTask.status || 'OPEN'
                     };
 
                     const response = http.put(`${API_ENDPOINTS.tasks}/${randomTask.id}`,
@@ -146,16 +154,20 @@ export default function(data) {
 
                     const success = check(response, {
                         'PUT /tasks/{id} status is 200': (r) => r.status === 200,
-                        'PUT /tasks/{id} response time < 1000ms': (r) => r.timings.duration < 1500,
+                        'PUT /tasks/{id} response time < 1500ms': (r) => r.timings.duration < 1500,
                     });
 
                     if (!success) {
                         errorRate.add(1);
                     }
+                } else {
+                    errorRate.add(1);
                 }
             } catch (e) {
                 errorRate.add(1);
             }
+        } else {
+            errorRate.add(1);
         }
     }
 
@@ -163,5 +175,5 @@ export default function(data) {
 }
 
 export function teardown(data) {
-    console.log('Teste de carga finalizado');
+    console.log("Teste completo.");
 }
