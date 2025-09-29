@@ -81,7 +81,6 @@ public class SecurityConfig{
 
     @Bean
     JwtDecoder jwtDecoder() {
-        System.out.println("///DEBUG, injected key: " + this.key);
         NimbusJwtDecoder decoder = NimbusJwtDecoder.withPublicKey(generatePublicKey(this.key)).build();
 
         JwtTimestampValidator timestampValidator = new JwtTimestampValidator(Duration.ofSeconds(30));
@@ -93,7 +92,6 @@ public class SecurityConfig{
 
     @Bean
     JwtEncoder jwtEncoder() {
-        System.out.println("///DEBUG, injected key: " + this.key);
         JWK jwk = new RSAKey.Builder(generatePublicKey(this.key)).privateKey(generatePrivateKey(this.priv)).build();
         JWKSource<SecurityContext> jwks = new ImmutableJWKSet<>(new JWKSet(jwk));
         return new NimbusJwtEncoder(jwks);
@@ -102,7 +100,6 @@ public class SecurityConfig{
     private RSAPublicKey generatePublicKey(Resource keyResource) {
         try {
             String keyResourceString = new String(keyResource.getInputStream().readAllBytes());
-            System.out.println("///DEBUG, keyResourceString public: " + keyResourceString);
             keyResourceString = keyResourceString.replace("-----BEGIN PUBLIC KEY-----", "")
                 .replace("-----END PUBLIC KEY-----", "")
                 .replaceAll("\\s", "");
@@ -119,7 +116,6 @@ public class SecurityConfig{
     private RSAPrivateKey generatePrivateKey(Resource keyResource) {
         try {
             String keyResourceString = new String(keyResource.getInputStream().readAllBytes());
-            System.out.println("///DEBUG, keyResourceString public: " + keyResourceString);
             keyResourceString = keyResourceString.replace("-----BEGIN PRIVATE KEY-----", "")
                 .replace("-----END PRIVATE KEY-----", "")
                 .replaceAll("\\s", "");
