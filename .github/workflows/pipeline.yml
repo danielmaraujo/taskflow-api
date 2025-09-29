@@ -84,4 +84,3 @@ jobs:
       - uses: grafana/run-k6-action@v1
         with:
           path: ./k6/load-test.js
-          debug: true

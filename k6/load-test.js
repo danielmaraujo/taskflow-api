@@ -7,11 +7,11 @@ export let errorRate = new Rate('errors');
 // Configuração do teste
 export let options = {
     stages: [
-        { duration: '1m', target: 10 },    // Rampa de subida para 10 usuários em 1 minuto
-        { duration: '3m', target: 10 },    // Mantém 10 usuários por 3 minutos
-        { duration: '1m', target: 20 },    // Rampa de subida para 20 usuários em 1 minuto
-        { duration: '4m', target: 20 },    // Mantém 20 usuários por 4 minutos
-        { duration: '1m', target: 0 },     // Rampa de descida para 0 usuários em 1 minuto
+        { duration: '30s', target: 10 },   // Rampa de subida para 10 usuários em 30 segundos
+        { duration: '1m30s', target: 10 }, // Mantém 10 usuários por 1 minuto e 30 segundos
+        { duration: '30s', target: 20 },   // Rampa de subida para 20 usuários em 30 segundos
+        { duration: '2m', target: 20 },    // Mantém 20 usuários por 2 minutos
+        { duration: '30s', target: 0 },    // Rampa de descida para 0 usuários em 30 segundos
     ],
     thresholds: {
         http_req_duration: ['p(95)<1500'], // 95% das requisições devem ser < 1500ms
