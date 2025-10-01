@@ -16,7 +16,7 @@ jobs:
         distribution: 'temurin'
         cache: maven
     - name: Run Unit Tests with Maven
-      run: mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
+      run: ./mvnw test -Dtest="!br.edu.iff.taskflowapi.integration.**"
 
   integration-tests:
     runs-on: self-hosted
@@ -30,7 +30,7 @@ jobs:
           distribution: 'temurin'
           cache: maven
       - name: Run Integration Tests with Maven
-        run: mvn test -Dtest="br.edu.iff.taskflowapi.integration.**"
+        run: ./mvnw test -Dtest="!br.edu.iff.taskflowapi.integration.**"
 
   security-test:
     runs-on: self-hosted
