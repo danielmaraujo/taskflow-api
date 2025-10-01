@@ -18,7 +18,7 @@ jobs:
     - name: Ensure mvnw is executable
       run: chmod +x ./mvnw
     - name: Run Unit Tests with Maven
-      run: ./mvnw test -Dtest="!br.edu.iff.taskflowapi.integration.**"
+      run: mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
 
   integration-tests:
     runs-on: self-hosted
@@ -34,7 +34,7 @@ jobs:
       - name: Ensure mvnw is executable
         run: chmod +x ./mvnw
       - name: Run Integration Tests with Maven
-        run: ./mvnw test -Dtest="!br.edu.iff.taskflowapi.integration.**"
+        run: mvn test -Dtest="br.edu.iff.taskflowapi.integration.**"
 
   security-test:
     runs-on: self-hosted
