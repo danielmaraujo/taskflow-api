@@ -15,8 +15,6 @@ jobs:
         java-version: '17'
         distribution: 'temurin'
         cache: maven
-    - name: Ensure mvnw is executable
-      run: chmod +x ./mvnw
     - name: Run Unit Tests with Maven
       run: mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
 
@@ -31,8 +29,6 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
-      - name: Ensure mvnw is executable
-        run: chmod +x ./mvnw
       - name: Run Integration Tests with Maven
         run: mvn test -Dtest="br.edu.iff.taskflowapi.integration.**"
 
