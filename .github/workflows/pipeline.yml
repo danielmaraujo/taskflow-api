@@ -43,6 +43,8 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
           cache: maven
+      - name: Ensure mvnw is executable
+        run: chmod +x ./mvnw
       - name: Setup Snyk
         uses: snyk/actions/setup@master
       - name: Run Snyk to check for vulnerabilities
