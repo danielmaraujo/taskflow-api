@@ -8,15 +8,15 @@ jobs:
   unit-tests:
     runs-on: self-hosted
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-        cache: maven
-    - name: Run Unit Tests with Maven
-      run: mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Run Unit Tests with Maven
+        run: mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
 
   integration-tests:
     runs-on: self-hosted
@@ -36,13 +36,17 @@ jobs:
     runs-on: self-hosted
     needs: integration-tests
     steps:
-      - uses: actions/checkout@master
-      - name: Ensure mvnw is executable
-        run: chmod +x ./mvnw
-      - name: Run Snyk
-        uses: snyk/actions/maven-3-jdk-17@master
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
         with:
-          args: --severity-threshold=high
+          java-version: '17'
+          distribution: 'temurin'
+          cache: maven
+      - name: Setup Snyk
+        uses: snyk/actions/setup@master
+      - name: Run Snyk to check for vulnerabilities
+        run: snyk test --severity-threshold=high
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
