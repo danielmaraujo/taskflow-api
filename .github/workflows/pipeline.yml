@@ -4,6 +4,7 @@ on:
   push:
     branches: [ "deploy_github" ]
 
+
 jobs:
   unit-tests:
     runs-on: self-hosted
