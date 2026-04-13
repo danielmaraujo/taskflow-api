@@ -15,7 +15,7 @@ unit-tests:
   stage: pre-deploy-tests
   image: maven:3.9.9-eclipse-temurin-17
   script:
-    - mvn test -Dtest="!br.edu.iff.taskflowapi.integration.**"
+    - mvn test -Dtest="!*IntegrationTest"
   rules:
     - if: $CI_COMMIT_REF_NAME == "deploy_gitlab"
 
@@ -24,7 +24,7 @@ integration-tests:
   image: maven:3.9.9-eclipse-temurin-17
   needs: ["unit-tests"]
   script:
-    - mvn test -Dtest="br.edu.iff.taskflowapi.integration.**"
+    - mvn test -Dtest="*IntegrationTest"
   rules:
     - if: $CI_COMMIT_REF_NAME == "deploy_gitlab"
 
