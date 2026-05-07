@@ -90,6 +90,8 @@ export default function(data) {
         'Authorization': `Bearer ${token}`
     };
 
+    let hasError = false;
+
     // Cenário 1: Listar tasks (70% das requisições)
     if (Math.random() < 0.7) {
         const response = http.get(API_ENDPOINTS.allTasks, { headers });
@@ -100,7 +102,7 @@ export default function(data) {
         });
 
         if (!success) {
-            errorRate.add(1);
+            hasError = true;
         }
     }
 
@@ -128,7 +130,7 @@ export default function(data) {
         });
 
         if (!success) {
-            errorRate.add(1);
+            hasError = true;
         }
     }
 
@@ -158,18 +160,21 @@ export default function(data) {
                     });
 
                     if (!success) {
-                        errorRate.add(1);
+                        hasError = true;
                     }
                 } else {
-                    errorRate.add(1);
+                    hasError = true;
                 }
             } catch (e) {
-                errorRate.add(1);
+                hasError = true;
             }
         } else {
-            errorRate.add(1);
+            hasError = true;
         }
     }
+
+    // Track error rate for all iterations (0 for success, 1 for error)
+    errorRate.add(hasError ? 1 : 0);
 
     sleep(1); // Pausa de 1 segundo entre requisições
 }
