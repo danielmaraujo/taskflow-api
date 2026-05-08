@@ -15,7 +15,6 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -60,8 +59,4 @@ class UserDetailsServiceImplTest {
         verify(userRepository, times(1)).findByEmail(user.getEmail());
     }
 
-    @Test
-    void intentionalFailure_forPipelineValidation() {
-        assertTrue(false);
-    }
 }
