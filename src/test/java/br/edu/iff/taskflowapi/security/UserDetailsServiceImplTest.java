@@ -58,5 +58,4 @@ class UserDetailsServiceImplTest {
             .hasMessage("User not found");
         verify(userRepository, times(1)).findByEmail(user.getEmail());
     }
-
 }
